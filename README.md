@@ -11,7 +11,8 @@
 Used the WITH function to Store results in a Common Table Expression (CTE) named Returned_Data, then used LAG() to fetch the previous day’s closing price and compute daily percentage returns. Finally, I calculated the Sharpe Ratio in the final query by using the AVG function in the numerator to calculates the average daily return and STDEV function in denominator to measure return volatility (risk)
 
 Sharpe Ratio Query:
-``WITH Returned_Data AS (
+``
+WITH Returned_Data AS (
 SELECT
 	Date,
 	Volume,
@@ -42,6 +43,7 @@ The WITH function in SQL is used to create (CTEs), which helped organize complex
 
 
 RSI Query:
+
 ``WITH Price_Changes AS (
 	SELECT
 	Date,
@@ -82,6 +84,7 @@ Uses LAG() to fetch previous day’s closing price for both SPY and GS to comput
 
 
 Stock and Market Comparison Query:
+
 ``SELECT 
 GS.Date,
 GS.Close_Last AS GS_Close,
@@ -109,6 +112,7 @@ GS was more volatile than SPY, making it riskier in downturns.
 I used the AVG() window function to compute a rolling average of Close_Last (closing stock price). Used the functions ORDER BY Date ROWS BETWEEN to identify time frame for both the 50- and 200-day moving average.
 
 Moving Average Query:
+
 ``SELECT 
 Date,
 Close_Last,
