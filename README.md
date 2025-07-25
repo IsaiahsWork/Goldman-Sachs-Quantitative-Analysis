@@ -6,6 +6,29 @@ I conducted a quantitative SQL analysis of GS's Sharpe Ratio, RSI, 50-day & 200-
 
 ---
 
+## 📦 Data Structure Overview
+
+| Column Name   | Description                                       |
+| ------------- | ------------------------------------------------- |
+| Date          | Trading day (business calendar)                   |
+| Volume        | Number of shares traded on the day                |
+| Close\_Last   | Final traded price of the day                     |
+| Daily\_Return | Percentage change in closing price from prior day |
+
+SPY and GS datasets followed the same schema, joined via `Date`.
+
+---
+
+## 🎯 Analysis Objectives
+
+✔️ Evaluate GS's **risk-adjusted returns** using the Sharpe Ratio
+✔️ Detect **momentum trends** with RSI
+✔️ Compare GS's **performance relative to S\&P 500 (SPY)**
+✔️ Measure **trend strength** using 50-day and 200-day moving averages
+✔️ Translate SQL analytics into investment insights
+
+---
+
 ## 🔧 Methods Used
 
 * Common Table Expressions (CTEs)
@@ -162,4 +185,4 @@ ORDER BY Moving_Avg_200 DESC;
 
 ---
 
-📁 Files and further work can be found on my [Portfolio](https://isaiahlaruewright.wixsite.com/isaiahswork) or [LinkedIn](https://www.linkedin.com/in/isaiah-l-wright/). Thank you for reading!
+📁 Files and further work can be found on my [Portfolio]([https://github.com](https://isaiahlaruewright.wixsite.com/isaiahswork)) or [LinkedIn]([https://linkedin.com](https://www.linkedin.com/in/isaiah-l-wright/)). Thank you for reading!
