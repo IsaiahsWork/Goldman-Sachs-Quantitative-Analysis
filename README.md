@@ -1,32 +1,24 @@
-# 📊 Goldman Sachs Quantitative Analysis (2020–2025)
+# 📈 Goldman Sachs Quantitative Analysis (2020–2025)
 
-Can Goldman Sachs (GS) outperform the market? This SQL-driven project analyzes GS stock performance using key financial indicators like Sharpe Ratio, RSI, Moving Averages, and correlation with the S\&P 500 (SPY) to evaluate its risk-adjusted returns over a 5-year period.
+🔹 Is Goldman Sachs (GS) a strong investment compared to the market?
 
----
-
-## 📅 Timeframe
-
-**March 2020 – March 2025**
-
-## 📦 Data Overview
-
-Daily closing price and volume data for:
-
-* **GS (Goldman Sachs)**
-* **SPY (S\&P 500 ETF)**
+I conducted a quantitative SQL analysis of GS's Sharpe Ratio, RSI, 50-day & 200-day moving averages, and market correlation with S\&P 500 (SPY) from **March 2020 – March 2025** to assess its risk-adjusted performance. I collected the data from Yahoo Finance.
 
 ---
 
-## 🔍 Analysis Objectives
+## 🔧 Methods Used
 
-✔️ **Sharpe Ratio** – Risk-adjusted return tracking
-✔️ **RSI (Relative Strength Index)** – Overbought/oversold signal detection
-✔️ **50/200-Day Moving Averages** – Trend momentum indicators
-✔️ **Market Correlation** – GS vs. S\&P 500 behavior
+* Common Table Expressions (CTEs)
+* Window Functions: `LAG()`, `AVG()`, `STDEV()`, `ROWS BETWEEN`
+* Time-Series SQL Analysis
+* Join operations for cross-symbol comparisons
 
 ---
 
-## 📈 Sharpe Ratio Analysis
+## 📊 Sharpe Ratio Analysis (Risk-Adjusted Return)
+
+✔ **What it is**: Measures how much excess return an investment generates per unit of risk.
+Used a CTE to calculate daily return using `LAG()` and then computed the Sharpe Ratio as average return divided by return volatility.
 
 ### ✅ Query Used:
 
@@ -48,17 +40,21 @@ SELECT
 FROM Returned_Data;
 ```
 
-### 📊 Results:
+### 📊 Findings:
 
-* 📉 **-0.45** on March 18, 2020 → COVID-19 crash
-* 📈 **\~0.12** in April 2021 → Rebound peak
-* 📊 **0.06** in 2025 → Moderate stability
+* 📉 Lowest (-0.45) on **March 18, 2020** → Extreme market uncertainty during COVID-19 crash.
+* 📈 Peak (\~0.12) in **April 2021** → Strong economic rebound.
+* 🟰 Recent Stability (\~0.06) in **2025** → Moderate risk-adjusted returns.
 
-📌 **Implication:** GS became more stable over time as risk-adjusted returns improved.
+📌 **Implication**: GS has moved from extreme risk to a more stable investment option over time.
 
 ---
 
-## 📊 RSI (Relative Strength Index)
+## 🔄 RSI (Relative Strength Index – Momentum Indicator)
+
+✔ **What it is**: RSI measures the speed and magnitude of price movements to identify overbought or oversold conditions (scale from 0 to 100).
+
+Two CTEs were used to calculate Price\_Change and then rolling averages of gains and losses.
 
 ### ✅ Query Used:
 
@@ -72,7 +68,7 @@ WITH Price_Changes AS (
   FROM SqlProjects.dbo.GS
 ),
 Avg_Gains_Losses AS (
-  SELECT
+  SELECT 
     Date,
     Volume,
     Close_Last,
@@ -89,22 +85,26 @@ FROM Avg_Gains_Losses
 ORDER BY Date DESC;
 ```
 
-### 📊 Results:
+### 📊 Findings:
 
-* **RSI 81.95** → Feb 3, 2025 → Overbought
-* **RSI 15.01** → Mar 10, 2025 → Oversold
-* **RSI 20.1** → Mar 13, 2025 → Still oversold
+* 📈 Overbought (RSI > 70) on **Feb 3, 2025**: RSI **81.95**
+* 📉 Oversold (RSI < 30) on **March 10, 2025**: RSI **15.01**
+* 📉 Recent (March 13, 2025): RSI **20.1**, still oversold
 
-📌 **Implication:** Signals potential reversal; GS moved from overbought to oversold.
+📌 **Implication**: GS was overbought in early 2025 but is now oversold, suggesting a potential reversal.
 
 ---
 
-## 🔄 Market Performance vs. S\&P 500
+## 📈 GS vs. S\&P 500: Market Performance Comparison
+
+✔ **What it is**: Measures how GS performed relative to the overall market (S\&P 500).
+
+Daily returns were calculated using `LAG()` for both GS and SPY and then joined by date.
 
 ### ✅ Query Used:
 
 ```sql
-SELECT
+SELECT 
   GS.Date,
   GS.Close_Last AS GS_Close,
   (GS.Close_Last - LAG(GS.Close_Last) OVER (ORDER BY GS.Date)) / LAG(GS.Close_Last) OVER (ORDER BY GS.Date) AS Stock_Return,
@@ -115,22 +115,26 @@ JOIN SqlProjects.dbo.SPY ON GS.Date = SPY.Date
 ORDER BY Stock_Return DESC;
 ```
 
-### 📊 Results:
+### 📊 Findings:
 
-* **Outperformed** in 2021 & 2023
-* **Nov 6, 2024:** GS = **13.09%**, SPY = **2.48%**
-* More **volatile** than market overall
+* ✅ GS outperformed SPY in **2021** and **2023**
+* 📅 On **Nov 6, 2024**: GS +13.09% vs. SPY +2.48%
+* ⚠️ GS was more volatile than SPY
 
-📌 **Implication:** GS amplifies market direction—greater returns in bull markets, steeper losses in bear markets.
+📌 **Implication**: GS amplifies market trends—higher gains in bull markets, steeper losses in bear markets.
 
 ---
 
-## 📉 50-Day vs. 200-Day Moving Average
+## 📊 50-Day vs. 200-Day Moving Averages – Trend Strength
+
+✔ **What it is**: Moving averages smooth price action and identify long/short-term trends.
+
+Used `AVG()` window functions with `ROWS BETWEEN` for moving average calculations.
 
 ### ✅ Query Used:
 
 ```sql
-SELECT
+SELECT 
   Date,
   Close_Last,
   AVG(Close_Last) OVER (ORDER BY Date ROWS BETWEEN 49 PRECEDING AND CURRENT ROW) AS Moving_Avg_50,
@@ -139,31 +143,23 @@ FROM SqlProjects.dbo.GS
 ORDER BY Moving_Avg_200 DESC;
 ```
 
-### 📊 Results:
+### 📊 Findings:
 
-* **Golden Cross** → June 2021 → Bullish trend
-* **Death Cross** → March 2022 → Bearish signal
-* **2025** → MAs converging → Consolidation or breakout expected
+* 📈 **Golden Cross** (June 2021): Bullish signal
+* 📉 **Death Cross** (March 2022): Bearish signal
+* 🟰 **2025**: MAs converging—possible breakout ahead
 
-📌 **Implication:**
-
-* Golden Cross → Buy signal
-* Death Cross → Sell signal
-* Now: market indecision, but preparing for next move
+📌 **Implication**: Trend structure suggests upcoming breakout; keep an eye on moving averages.
 
 ---
 
-## 🧠 Investment Insights Summary
+## 🔍 Investment Insights from the Analysis
 
-✔ Volatile in early 2020; stabilized post-COVID crash
-✔ Outperforms market during uptrends; underperforms in downturns
-✔ RSI suggests possible buy opportunity
-✔ Trend signals (Golden/Death Cross) confirmed momentum changes
+✔ GS was highly volatile during the 2020 market crash, with negative Sharpe Ratios.
+✔ GS outperformed the market in bullish periods but was more volatile in downturns.
+✔ RSI suggests GS is currently oversold, possibly a buy opportunity.
+✔ Moving Averages confirmed key trend shifts, with a new trend possibly forming.
 
 ---
 
-## 📢 Final Thoughts
-
-This SQL-based equity performance study shows how data analysis can inform investment decisions. By comparing GS to macro trends and using technical indicators, investors can better understand risk-reward dynamics over time.
-
-**Let’s connect** – [LinkedIn](https://www.linkedin.com/in/isaiah-l-wright/) | [Portfolio](https://isaiahlaruewright.wixsite.com/isaiahswork)
+📁 Files and further work can be found on my [Portfolio](https://isaiahlaruewright.wixsite.com/isaiahswork) or [LinkedIn](https://www.linkedin.com/in/isaiah-l-wright/). Thank you for reading!
